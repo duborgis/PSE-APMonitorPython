@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 #inicializa a instancia GEKKO e não utiliza o servidor remoto
 #utiliza o servidor LOCAL,instalado na maquina
-m = GEKKO(remote=False)
+m = GEKKO(remote=True)
 
 #CRIAR AS VARIAVEIS NO GEKKO
 #SS value é o chute inicial
@@ -27,9 +27,34 @@ k1 = m.Intermediate(k01*m.exp(-E1/T))
 k2 = m.Intermediate(k02*m.exp(-E2/T))
 
 #criar as restrições do sistema
-m.Equation( xA.dt() == -k1*xA**2)
 m.Equation( xB.dt() == k1*xA**2 - k2*xB )
+m.Equation( xA.dt() == -k1*xA**2)
 m.Equation( xA + xB + xC == 1 )
+
+
+# OUTRA FORMA DE DEFINIR EQUAÇÕES
+# eqs = [
+# xB.dt() == k1*xA**2 - k2*xB,
+# xA.dt() == -k1*xA**2,
+# xA + xB + xC == 1 
+# ]
+# m.Equations(eqs)
+
+
+# OUTRA FORMA DE DEFINIR EQUAÇÕES
+def func():
+	f1 = k1*xA**2 - k2*xB
+	f2 = -k1*xA**2
+	f3 = xA + xB + xC - 1
+	return [f1, f2, f3]
+
+
+f = func()
+
+m.Equation( xB.dt() == f[0])
+m.Equation( xA.dt() == f[1])
+m.Equation( 0 == f[2] )
+
 
 #Resolver um problema do tipo simulação dinamica
 #Setar o modo de operação

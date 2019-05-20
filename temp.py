@@ -8,3 +8,7 @@ Este é um arquivo de script temporário.
 INITIAL COMMIT
 
 """
+
+import apmonitor
+
+
